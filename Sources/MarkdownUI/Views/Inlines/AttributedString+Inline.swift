@@ -48,6 +48,7 @@ extension AttributedString {
         attributes: environment.strikethrough.mergingAttributes(attributes)
       )
     case .link(let destination, let children):
+        //TODO -- parse the link and optionally provide a transformation so that custom entitities can render as we please
       var newAttributes = environment.link.mergingAttributes(attributes)
       newAttributes.link = URL(string: destination, relativeTo: environment.baseURL)
       self.init(inlines: children, environment: environment, attributes: newAttributes)
