@@ -2,6 +2,7 @@ import SwiftUI
 
 struct InlineText: View {
   @Environment(\.inlineImageProvider) private var inlineImageProvider
+    @Environment(\.linkAttributeAugmenter) private var linkAttributeAugmenter
   @Environment(\.baseURL) private var baseURL
   @Environment(\.imageBaseURL) private var imageBaseURL
   @Environment(\.theme) private var theme
@@ -27,10 +28,11 @@ struct InlineText: View {
           strikethrough: self.theme.strikethrough,
           link: self.theme.link
         ),
-        attributes: attributes
+        attributes: attributes,
+        linkAugmenter: linkAttributeAugmenter
       )
     }
-    .task(id: self.inlines) {
+    .task(id: self.inlines, priority: .medium) {
       self.inlineImages = (try? await self.loadInlineImages()) ?? [:]
     }
     .fixedSize(horizontal: false, vertical: true)

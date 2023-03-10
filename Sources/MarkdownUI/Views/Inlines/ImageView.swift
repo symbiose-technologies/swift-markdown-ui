@@ -52,6 +52,9 @@ private struct LinkModifier: ViewModifier {
 
   let destination: String?
 
+    
+    //TODO: Add the additional attributes here instead of at AttributedString creation?
+    
   func body(content: Content) -> some View {
     if let url = self.destination.flatMap({ URL(string: $0, relativeTo: self.baseURL) }) {
       Button {

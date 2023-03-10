@@ -188,7 +188,11 @@ import SwiftUI
 ///   }
 /// )
 /// ```
-public struct Markdown: View {
+public struct Markdown: View, Equatable {
+    public static func == (lhs: Markdown, rhs: Markdown) -> Bool {
+        lhs.storage == rhs.storage
+    }
+    
   private enum Storage: Equatable {
     case text(String)
     case markdownContent(MarkdownContent)
