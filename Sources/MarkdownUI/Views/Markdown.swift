@@ -189,21 +189,17 @@ import SwiftUI
 /// )
 /// ```
 public struct Markdown: View {
+    
+
   @Environment(\.colorScheme) private var colorScheme
   @Environment(\.theme.text) private var text
 
-  private let content: MarkdownContent
-  private let baseURL: URL?
-  private let imageBaseURL: URL?
+    
+  let content: MarkdownContent
+  let baseURL: URL?
+  let imageBaseURL: URL?
 
-  /// Creates a Markdown view from a Markdown content value.
-  /// - Parameters:
-  ///   - content: The Markdown content value.
-  ///   - baseURL: The base URL to use when resolving Markdown URLs. If this value is `nil`, the initializer will consider all
-  ///              URLs absolute. The default is `nil`.
-  ///   - imageBaseURL: The base URL to use when resolving Markdown image URLs. If this value is `nil`, the initializer will
-  ///                   determine image URLs using the `baseURL` parameter. The default is `nil`.
-  public init(_ content: MarkdownContent, baseURL: URL? = nil, imageBaseURL: URL? = nil) {
+  public init(_ content: MarkdownContent, baseURL: URL?, imageBaseURL: URL?) {
     self.content = content
     self.baseURL = baseURL
     self.imageBaseURL = imageBaseURL ?? baseURL
@@ -221,9 +217,9 @@ public struct Markdown: View {
     .environment(\.imageBaseURL, self.imageBaseURL)
   }
 
-  private var blocks: [BlockNode] {
-    self.content.blocks.filterImagesMatching(colorScheme: self.colorScheme)
-  }
+    private var blocks: [Block] {
+        self.content.colorScheme(self.colorScheme).blocks
+    }
 }
 
 extension Markdown {
@@ -234,9 +230,14 @@ extension Markdown {
   ///              URLs absolute. The default is `nil`.
   ///   - imageBaseURL: The base URL to use when resolving Markdown image URLs. If this value is `nil`, the initializer will
   ///                   determine image URLs using the `baseURL` parameter. The default is `nil`.
-  public init(_ markdown: String, baseURL: URL? = nil, imageBaseURL: URL? = nil) {
+  public init(markdown: String, baseURL: URL? = nil, imageBaseURL: URL? = nil) {
     self.init(MarkdownContent(markdown), baseURL: baseURL, imageBaseURL: imageBaseURL)
   }
+    
+    public init(content: MarkdownContent, baseURL: URL?, imageBaseURL: URL?) {
+        self.init(content, baseURL: baseURL, imageBaseURL: imageBaseURL)
+    }
+    
 
   /// Creates a Markdown view composed of any number of blocks.
   ///

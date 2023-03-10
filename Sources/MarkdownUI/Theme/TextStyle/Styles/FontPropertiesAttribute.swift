@@ -35,7 +35,6 @@ extension AttributedString {
       output[run.range].font = .withProperties(fontProperties)
       output[run.range].fontProperties = nil
     }
-
     return output
   }
 }
