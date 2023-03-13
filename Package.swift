@@ -17,13 +17,16 @@ let package = Package(
     )
   ],
   dependencies: [
-    .package(url: "https://github.com/pointfreeco/swift-snapshot-testing", from: "1.10.0")
+    .package(url: "https://github.com/pointfreeco/swift-snapshot-testing", from: "1.10.0"),
+    .package(url: "https://github.com/symbiose-technologies/AttributedString", branch: "symbiose")
   ],
   targets: [
     .target(name: "cmark-gfm"),
     .target(
       name: "MarkdownUI",
-      dependencies: ["cmark-gfm"]
+      dependencies: ["cmark-gfm",
+                     .product(name: "AttributedString", package: "AttributedString")
+                    ]
     ),
     .testTarget(
       name: "MarkdownUITests",
