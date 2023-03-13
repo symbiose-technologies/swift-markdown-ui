@@ -7,6 +7,7 @@ struct InlineEnvironment {
   let strong: TextStyle
   let strikethrough: TextStyle
   let link: TextStyle
+  let highlighted: TextStyle
 }
 
 extension AttributedString {
@@ -73,7 +74,7 @@ extension AttributedString {
 }
 
 extension TextStyle {
-  fileprivate func mergingAttributes(_ attributes: AttributeContainer) -> AttributeContainer {
+  func mergingAttributes(_ attributes: AttributeContainer) -> AttributeContainer {
     var newAttributes = attributes
     self._collectAttributes(in: &newAttributes)
     return newAttributes
