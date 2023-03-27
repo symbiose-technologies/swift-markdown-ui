@@ -8,6 +8,8 @@ struct CodeBlockView: View {
 
   init(info: String?, content: String) {
     self.info = info
+//      self.content = content
+//      print("[CodeBlockView] init: \(content)")
     self.content = content.hasSuffix("\n") ? String(content.dropLast()) : content
   }
 

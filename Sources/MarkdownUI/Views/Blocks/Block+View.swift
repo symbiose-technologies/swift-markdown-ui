@@ -13,6 +13,19 @@ extension Block: View {
       ApplyBlockStyle(\.list, to: NumberedListView(tight: tight, start: start, items: items))
     case .codeBlock(let info, let content):
       ApplyBlockStyle(\.codeBlock, to: CodeBlockView(info: info, content: content))
+            .textSelection(.enabled)
+            .overlay(alignment: .topTrailing) {
+                Button {
+                    copyTextToClipboard(txt: content)
+                } label: {
+                    Image(systemName: "clipboard")
+                }
+                .foregroundColor(.white)
+                .background(Circle().fill(.thickMaterial)
+                    .overlay(.black.opacity(0.5))
+                )
+                .offset(x: -8, y: 8)
+            }
     case .htmlBlock(let content):
       ApplyBlockStyle(\.paragraph, to: HTMLBlockView(content: content))
     case .paragraph(let inlines):
