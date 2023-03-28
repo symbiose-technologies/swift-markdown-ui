@@ -16,6 +16,8 @@ struct TextFieldAppKit: View {
     
     let attributed: ASAttributedString
     @Environment(\.textActionObservers) var textActionObservers
+    @Environment(\.richTextSelectability) private var richTextSelectability: Bool
+
     
     init(inlines: [Inline],
          images: [String: Image],
@@ -38,7 +40,8 @@ struct TextFieldAppKit: View {
     var body: some View {
         HuggingNSTextFieldRep(attributedString: nil,
                               attr: attributed,
-                              textActionObservers: textActionObservers)
+                              textActionObservers: textActionObservers,
+                              textIsSelectable: richTextSelectability)
             .fixedSize(horizontal: false, vertical: true)
 //            .frame(minWidth: 60, alignment: .leading)
     }
@@ -53,6 +56,7 @@ struct HuggingNSTextFieldRep: NSViewRepresentable {
     let attributedString: NSAttributedString?
     let attr: ASAttributedString?
     let textActionObservers: [TextActionObserver]
+    let textIsSelectable: Bool
     
     func makeNSView(context: Context) -> HuggingNSTextField {
         let view: HuggingNSTextField = HuggingNSTextField()
@@ -64,7 +68,7 @@ struct HuggingNSTextFieldRep: NSViewRepresentable {
         view.isBezeled = false
         view.isEditable = false
         view.allowsEditingTextAttributes = true
-        view.isSelectable = false
+        view.isSelectable = textIsSelectable
         view.lineBreakMode = .byWordWrapping
         view.maximumNumberOfLines = 0
         
