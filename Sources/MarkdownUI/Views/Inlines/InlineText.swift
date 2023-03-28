@@ -9,6 +9,8 @@ struct InlineText: View {
     @Environment(\.attributedTextActionHandler) private var attributedTextActionHandler
     @Environment(\.substringHighlightRegex) private var substringHighlightRegex: String?
     
+    @Environment(\.richTextSelectability) private var richTextSelectability: Bool
+    
   @State private var inlineImages: [String: Image] = [:]
 
   private let inlines: [Inline]
