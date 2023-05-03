@@ -15,47 +15,51 @@ import UIKit
 
 extension ASAttributedString {
     
-    static func createFrom(inlines: [Inline],
+    static func createFrom(inlines: [InlineNode],
          images: [String: Image],
-         environment: InlineEnvironment,
+         textStyles: InlineTextStyles,
          attributes: AttributeContainer,
-         linkAugmenter: LinkAttributeAugmenter,
-        substringHighlightRegex: String?,
-        textActions: [ASAttributedString.Action] = []
+                           symAugmented: SymAugmentation
     ) -> ASAttributedString {
         let string = inlines.reduce(into: ASAttributedString(stringLiteral: "")) {
             $0 += createFor(inline: $1,
-                            environment: environment,
+                            textStyles: textStyles,
                             attributes: attributes,
-                            linkAugmenter: linkAugmenter,
-                            substringHighlightRegex: substringHighlightRegex,
-                            textActions: textActions)
+                            sym: symAugmented)
         }
         
         return string
     }
     
-    static func createFor(inline: Inline,
-         environment: InlineEnvironment,
-         attributes: AttributeContainer,
-         linkAugmenter: LinkAttributeAugmenter,
-         substringHighlightRegex: String?,
-         textActions: [ASAttributedString.Action] = []) -> ASAttributedString {
-        let native = AttributedString(inline: inline, environment: environment, attributes: attributes, linkAugmenter: linkAugmenter)
-            .resolvingFonts()
-        var attr = ASAttributedString(NSAttributedString(string: inline.text))
+    static func createFor(inline: InlineNode,
+                          textStyles: InlineTextStyles,
+                          attributes: AttributeContainer,
+                          sym: SymAugmentation) -> ASAttributedString {
+        
+        let native = inline.renderAttributedString(
+            baseURL: nil,
+            textStyles: textStyles,
+            attributes: attributes,
+            symAugmented: sym
+          )
+        
+//        let native = AttributedString(inline: inline, environment: environment, attributes: attributes, linkAugmenter: linkAugmenter)
+//            .resolvingFonts()
+        let textStr = String(native.characters[...])
+        
+        var attr = ASAttributedString(NSAttributedString(string: textStr))
         
         for run in native.runs {
             let attributeDict: [NSAttributedString.Key: Any] = run.attributes.toNSDictionary()
             
             attr.set(attributes: [.custom(attributeDict)], range: NSRange(run.range, in: native))
-            if let substringHighlightRegex = substringHighlightRegex {
-                let substringHighlightContainer = environment.highlighted.mergingAttributes(attributes)
+            if let substringHighlightRegex = sym.highlightSubstringRegex {
+                let substringHighlightContainer = sym.highlightedStyle.mergingAttributes(attributes)
                 let substringHighlightDic = substringHighlightContainer.toNSDictionary()
                 attr.add(attributes: [.custom(substringHighlightDic)], checkings: [.regex(substringHighlightRegex)])
             }
         }
-        for action in textActions {
+        for action in sym.attributedTextActionHandlers {
             attr.add(attributes: [.action(action)])
         }
         

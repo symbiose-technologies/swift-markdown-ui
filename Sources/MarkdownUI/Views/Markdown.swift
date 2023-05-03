@@ -217,10 +217,15 @@ public struct Markdown: View {
     .environment(\.imageBaseURL, self.imageBaseURL)
   }
 
-    private var blocks: [Block] {
-        self.content.colorScheme(self.colorScheme).blocks
+    
+    private var blocks: [BlockNode] {
+      self.content.blocks.filterImagesMatching(colorScheme: self.colorScheme)
     }
+//    private var blocks: [Block] {
+//        self.content.colorScheme(self.colorScheme).blocks
+//    }
 }
+
 
 extension Markdown {
   /// Creates a Markdown view from a Markdown-formatted string.
@@ -230,14 +235,13 @@ extension Markdown {
   ///              URLs absolute. The default is `nil`.
   ///   - imageBaseURL: The base URL to use when resolving Markdown image URLs. If this value is `nil`, the initializer will
   ///                   determine image URLs using the `baseURL` parameter. The default is `nil`.
-  public init(markdown: String, baseURL: URL? = nil, imageBaseURL: URL? = nil) {
+  public init(_ markdown: String, baseURL: URL? = nil, imageBaseURL: URL? = nil) {
     self.init(MarkdownContent(markdown), baseURL: baseURL, imageBaseURL: imageBaseURL)
   }
     
-    public init(content: MarkdownContent, baseURL: URL?, imageBaseURL: URL?) {
-        self.init(content, baseURL: baseURL, imageBaseURL: imageBaseURL)
-    }
-    
+//public init(content: MarkdownContent, baseURL: URL?, imageBaseURL: URL?) {
+//    self.init(content, baseURL: baseURL, imageBaseURL: imageBaseURL)
+//}
 
   /// Creates a Markdown view composed of any number of blocks.
   ///

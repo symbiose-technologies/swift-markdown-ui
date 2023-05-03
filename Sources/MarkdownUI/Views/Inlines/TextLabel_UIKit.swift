@@ -13,18 +13,18 @@ import AttributedString
 struct TextLabelUIKit: View {
 
     let attributed: ASAttributedString
-    init(inlines: [Inline],
+    init(inlines: [InlineNode],
          images: [String: Image],
-         environment: InlineEnvironment,
+         textStyles: InlineTextStyles,
          attributes: AttributeContainer,
-         substringHighlightRegex: String?,
-         linkAugmenter: LinkAttributeAugmenter) {
+         symAugmented: SymAugmentation
+    ) {
         attributed = .createFrom(inlines: inlines,
                                  images: images,
-                                 environment: environment,
+                                 textStyles: textStyles,
                                  attributes: attributes,
-                                 linkAugmenter: linkAugmenter,
-                                 substringHighlightRegex: substringHighlightRegex)
+                                 symAugmented: symAugmented
+        )
     }
     
     var body: some View {

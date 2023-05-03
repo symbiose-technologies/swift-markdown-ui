@@ -19,21 +19,17 @@ struct TextFieldAppKit: View {
     @Environment(\.richTextSelectability) private var richTextSelectability: Bool
 
     
-    init(inlines: [Inline],
+    init(inlines: [InlineNode],
          images: [String: Image],
-         environment: InlineEnvironment,
+         textStyles: InlineTextStyles,
          attributes: AttributeContainer,
-         linkAugmenter: LinkAttributeAugmenter,
-         substringHighlightRegex: String?,
-         attributedTextActionHandler: [ASAttributedString.Action] = []
+         symAugmented: SymAugmentation
     ) {
         attributed = .createFrom(inlines: inlines,
                                  images: images,
-                                 environment: environment,
+                                 textStyles: textStyles,
                                  attributes: attributes,
-                                 linkAugmenter: linkAugmenter,
-                                 substringHighlightRegex: substringHighlightRegex,
-                                 textActions: attributedTextActionHandler
+                                 symAugmented: symAugmented
         )
     }
     

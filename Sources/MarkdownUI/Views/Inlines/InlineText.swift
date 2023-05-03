@@ -18,6 +18,14 @@ struct InlineText: View {
   init(_ inlines: [InlineNode]) {
     self.inlines = inlines
   }
+    
+    var symAugmented: SymAugmentation {
+        return SymAugmentation(highlightedStyle: theme.highlighted,
+                               highlightSubstringRegex: substringHighlightRegex,
+                               linkAttributeAugmenter: linkAttributeAugmenter,
+                               attributedTextActionHandlers: attributedTextActionHandler
+        )
+    }
 
   var body: some View {
     TextStyleAttributesReader { attributes in
@@ -35,9 +43,7 @@ struct InlineText: View {
               highlighted: self.theme.highlighted
             ),
             attributes: attributes,
-            linkAugmenter: linkAttributeAugmenter,
-            substringHighlightRegex: substringHighlightRegex,
-            attributedTextActionHandler: attributedTextActionHandler
+            symAugmented: symAugmented
         )
         #else
 //        TextLabelUIKit(inlines: self.inlines,
@@ -53,23 +59,21 @@ struct InlineText: View {
 //                       attributes: attributes,
 //                       linkAugmenter: linkAttributeAugmenter)
         
-      Text(
-        inlines: self.inlines,
-        images: self.inlineImages,
-        environment: .init(
+      
+        self.inlines.renderText(
           baseURL: self.baseURL,
-          code: self.theme.code,
-          emphasis: self.theme.emphasis,
-          strong: self.theme.strong,
-          strikethrough: self.theme.strikethrough,
-          link: self.theme.link,
-          highlighted: self.theme.highlighted
-        ),
-        images: self.inlineImages,
-        attributes: attributes,
-        linkAugmenter: linkAttributeAugmenter,
-        substringHighlightRegex: substringHighlightRegex
-      )
+          textStyles: .init(
+            code: self.theme.code,
+            emphasis: self.theme.emphasis,
+            strong: self.theme.strong,
+            strikethrough: self.theme.strikethrough,
+            link: self.theme.link
+          ),
+          images: self.inlineImages,
+          attributes: attributes,
+          symAugmented: self.symAugmented
+        )
+//        .highlightMatches(regex: substringHighlightRegex, attributes: environment.highlighted.mergingAttributes(attributes))
         
         #endif
     }

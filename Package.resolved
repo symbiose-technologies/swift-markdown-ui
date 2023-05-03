@@ -1,6 +1,15 @@
 {
   "pins" : [
     {
+      "identity" : "attributedstring",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/symbiose-technologies/AttributedString",
+      "state" : {
+        "branch" : "symbiose",
+        "revision" : "0db3ed2a86d4b8d7fd4abf427f319bc41fc07c6d"
+      }
+    },
+    {
       "identity" : "swift-snapshot-testing",
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/pointfreeco/swift-snapshot-testing",
