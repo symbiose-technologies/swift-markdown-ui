@@ -118,7 +118,31 @@ struct HuggingNSTextFieldRep: NSViewRepresentable {
 
 class HuggingNSTextField: NSTextField {
     
-    
+//    override func resetCursorRects() {
+//        let attributedString = self.attributedStringValue
+//
+//        attributedString.enumerateAttribute(.link, in: NSRange(location: 0, length: attributedString.length)) { (url, range, _) in
+//            if let _ = url as? URL {
+//                self.addCursorRect(self.bounds, cursor: .pointingHand)
+//                return
+//            }
+//        }
+//    }
+//
+//    override func mouseDown(with event: NSEvent) {
+//        let location = convert(event.locationInWindow, from: nil)
+//
+//
+//
+//        let characterIndex = layoutManager?.characterIndex(for: location, in: textContainer!, fractionOfDistanceBetweenInsertionPoints: nil)
+//
+//        if let url = attributedStringValue.attribute(.link, at: characterIndex!, effectiveRange: nil) as? URL {
+//            NSWorkspace.shared.open(url)
+//        } else {
+//            super.mouseDown(with: event)
+//        }
+//    }
+
 }
 
 

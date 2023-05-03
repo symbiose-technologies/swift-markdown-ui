@@ -96,6 +96,10 @@ extension AttributeContainer {
             attributeDict[.macLink] = link
             attributeDict[.cursor] = NSCursor.pointingHand
         }
+        
+        let paragraphStyle = NSMutableParagraphStyle()
+        paragraphStyle.lineHeightMultiple = 1.3
+        attributeDict[.paragraphStyle] = paragraphStyle
         #elseif os(iOS)
         if let uiKit = try? Dictionary(self, including: \.uiKit) {
             attributeDict.merge(uiKit) { (_, new) in new }

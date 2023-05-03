@@ -54,7 +54,7 @@ extension AttributedString {
         linkAugmenter: linkAugmenter
       )
     case .link(let destination, let children):
-        //TODO -- parse the link and optionally provide a transformation so that custom entitities can render as we please
+
       var newAttributes = environment.link.mergingAttributes(attributes)
       newAttributes.link = URL(string: destination, relativeTo: environment.baseURL)
         newAttributes = linkAugmenter.augmentLinkAttributes(
