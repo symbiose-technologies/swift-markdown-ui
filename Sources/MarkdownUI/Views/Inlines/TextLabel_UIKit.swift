@@ -13,13 +13,15 @@ import AttributedString
 struct TextLabelUIKit: View {
 
     let attributed: ASAttributedString
-    init(inlines: [InlineNode],
+    init(baseURL: URL?,
+         inlines: [InlineNode],
          images: [String: Image],
          textStyles: InlineTextStyles,
          attributes: AttributeContainer,
          symAugmented: SymAugmentation
     ) {
-        attributed = .createFrom(inlines: inlines,
+        attributed = .createFrom(baseURL: baseURL,
+                                 inlines: inlines,
                                  images: images,
                                  textStyles: textStyles,
                                  attributes: attributes,

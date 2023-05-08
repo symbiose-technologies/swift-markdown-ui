@@ -18,18 +18,25 @@ struct TextFieldAppKit: View {
     @Environment(\.textActionObservers) var textActionObservers
     @Environment(\.richTextSelectability) private var richTextSelectability: Bool
 
-    
-    init(inlines: [InlineNode],
+    init(baseURL: URL?,
+         inlines: [InlineNode],
          images: [String: Image],
          textStyles: InlineTextStyles,
          attributes: AttributeContainer,
          symAugmented: SymAugmentation
     ) {
-        attributed = .createFrom(inlines: inlines,
-                                 images: images,
+//        attributed = .createFrom(baseURL: baseURL,
+//                                 inlines: inlines,
+//                                 images: images,
+//                                 textStyles: textStyles,
+//                                 attributes: attributes,
+//                                 symAugmented: symAugmented
+//        )
+        attributed = .createFromArray(baseURL: baseURL,
+                                 inlines: inlines,
                                  textStyles: textStyles,
                                  attributes: attributes,
-                                 symAugmented: symAugmented
+                                      sym: symAugmented
         )
     }
     

@@ -21,6 +21,65 @@ extension InlineNode {
   }
 }
 
+//create a version that takes an array of `[InlineNode]` and uses a reduce fn to create a single attributed string
+
+extension Array where Element == InlineNode {
+    func renderCombinedAttributedString(
+        baseURL: URL?,
+        textStyles: InlineTextStyles,
+        attributes: AttributeContainer,
+        symAugmented: SymAugmentation,
+        executeHighlightRegex: Bool = false
+    ) -> AttributedString {
+        
+        if let cached = SymAttributedStringCache.shared.attrStrCache.value(forKey: .init(
+            inlineNodes: self,
+            attributes: attributes)) {
+//            print("[ATTRIBUTED STRING] CACHE HIT!!")
+            if executeHighlightRegex {
+                return cached
+                    .highlightMatches(
+                        regex: symAugmented.highlightSubstringRegex,
+                        attributes: symAugmented.highlightedStyle.mergingAttributes(attributes)
+                    )
+            } else {
+                return cached
+            }
+            
+            
+        } else {
+            let combinedAttributedString = reduce(into: AttributedString()) { result, node in
+                let nodeAttributedString = node.renderAttributedString(
+                    baseURL: baseURL,
+                    textStyles: textStyles,
+                    attributes: attributes,
+                    symAugmented: symAugmented
+                )
+                result.append(nodeAttributedString)
+            }
+            
+            let cacheableStr = combinedAttributedString
+                .resolvingFonts()
+            
+            SymAttributedStringCache.shared.attrStrCache.insert(cacheableStr, forKey: .init(inlineNodes: self, attributes: attributes))
+            
+            if executeHighlightRegex {
+                return cacheableStr
+                    .highlightMatches(
+                        regex: symAugmented.highlightSubstringRegex,
+                        attributes: symAugmented.highlightedStyle.mergingAttributes(attributes)
+                    )
+            } else {
+                return cacheableStr
+            }
+        }
+        
+        
+    }
+}
+
+
+
 private struct AttributedStringInlineRenderer {
   var result = AttributedString()
 

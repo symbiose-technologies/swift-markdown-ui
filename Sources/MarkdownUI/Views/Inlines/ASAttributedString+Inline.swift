@@ -15,14 +15,16 @@ import UIKit
 
 extension ASAttributedString {
     
-    static func createFrom(inlines: [InlineNode],
+    static func createFrom(baseURL: URL?,
+                           inlines: [InlineNode],
          images: [String: Image],
          textStyles: InlineTextStyles,
          attributes: AttributeContainer,
                            symAugmented: SymAugmentation
     ) -> ASAttributedString {
         let string = inlines.reduce(into: ASAttributedString(stringLiteral: "")) {
-            $0 += createFor(inline: $1,
+            $0 += createFor(baseURL: baseURL,
+                            inline: $1,
                             textStyles: textStyles,
                             attributes: attributes,
                             sym: symAugmented)
@@ -31,13 +33,51 @@ extension ASAttributedString {
         return string
     }
     
-    static func createFor(inline: InlineNode,
+    
+    static func createFromArray(baseURL: URL?,
+                          inlines: [InlineNode],
+                          textStyles: InlineTextStyles,
+                          attributes: AttributeContainer,
+                          sym: SymAugmentation) -> ASAttributedString {
+        
+        let native = inlines.renderCombinedAttributedString(
+            baseURL: baseURL,
+            textStyles: textStyles,
+            attributes: attributes,
+            symAugmented: sym,
+            executeHighlightRegex: false
+          )
+
+        let textStr = String(native.characters[...])
+        
+        var attr = ASAttributedString(NSAttributedString(string: textStr))
+        
+        for run in native.runs {
+            let attributeDict: [NSAttributedString.Key: Any] = run.attributes.toNSDictionary()
+            
+            attr.set(attributes: [.custom(attributeDict)], range: NSRange(run.range, in: native))
+            if let substringHighlightRegex = sym.highlightSubstringRegex {
+                let substringHighlightContainer = sym.highlightedStyle.mergingAttributes(attributes)
+                let substringHighlightDic = substringHighlightContainer.toNSDictionary()
+                attr.add(attributes: [.custom(substringHighlightDic)], checkings: [.regex(substringHighlightRegex)])
+            }
+        }
+        for action in sym.attributedTextActionHandlers {
+            attr.add(attributes: [.action(action)])
+        }
+        
+        return attr
+    }
+    
+    
+    static func createFor(baseURL: URL?,
+                          inline: InlineNode,
                           textStyles: InlineTextStyles,
                           attributes: AttributeContainer,
                           sym: SymAugmentation) -> ASAttributedString {
         
         let native = inline.renderAttributedString(
-            baseURL: nil,
+            baseURL: baseURL,
             textStyles: textStyles,
             attributes: attributes,
             symAugmented: sym

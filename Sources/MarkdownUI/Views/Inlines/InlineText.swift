@@ -31,17 +31,16 @@ struct InlineText: View {
     TextStyleAttributesReader { attributes in
         #if os(macOS)
         TextFieldAppKit(
+            baseURL: baseURL,
             inlines: self.inlines,
             images: self.inlineImages,
-            environment: .init(
-              baseURL: self.baseURL,
-              code: self.theme.code,
-              emphasis: self.theme.emphasis,
-              strong: self.theme.strong,
-              strikethrough: self.theme.strikethrough,
-              link: self.theme.link,
-              highlighted: self.theme.highlighted
-            ),
+            textStyles: .init(
+                code: self.theme.code,
+                emphasis: self.theme.emphasis,
+                strong: self.theme.strong,
+                strikethrough: self.theme.strikethrough,
+                link: self.theme.link
+              ),
             attributes: attributes,
             symAugmented: symAugmented
         )
@@ -59,7 +58,7 @@ struct InlineText: View {
 //                       attributes: attributes,
 //                       linkAugmenter: linkAttributeAugmenter)
         
-      
+      //TODO: use the SymMemoryCache if performance is challenging
         self.inlines.renderText(
           baseURL: self.baseURL,
           textStyles: .init(
@@ -73,7 +72,6 @@ struct InlineText: View {
           attributes: attributes,
           symAugmented: self.symAugmented
         )
-//        .highlightMatches(regex: substringHighlightRegex, attributes: environment.highlighted.mergingAttributes(attributes))
         
         #endif
     }
