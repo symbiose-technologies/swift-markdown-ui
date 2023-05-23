@@ -1,11 +1,11 @@
-// swift-tools-version:5.6
+// swift-tools-version:5.7
 
 import PackageDescription
 
 let package = Package(
   name: "swift-markdown-ui",
   platforms: [
-    .macOS(.v12),
+    .macOS(.v13),
     .iOS(.v15),
     .tvOS(.v15),
     .watchOS(.v8),
@@ -18,14 +18,16 @@ let package = Package(
   ],
   dependencies: [
     .package(url: "https://github.com/pointfreeco/swift-snapshot-testing", from: "1.10.0"),
-    .package(url: "https://github.com/symbiose-technologies/AttributedString", branch: "symbiose")
+    .package(url: "https://github.com/symbiose-technologies/AttributedString", branch: "symbiose"),
+//    .package(url: "https://github.com/symbiose-technologies/HighlightSwift.git", branch: "symbiose")
   ],
   targets: [
     .target(name: "cmark-gfm"),
     .target(
       name: "MarkdownUI",
       dependencies: ["cmark-gfm",
-                     .product(name: "AttributedString", package: "AttributedString")
+                     .product(name: "AttributedString", package: "AttributedString"),
+//                     .product(name: "HighlightSwift", package: "HighlightSwift")
                     ]
     ),
     .testTarget(

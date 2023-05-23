@@ -33,6 +33,7 @@
 
 /* Begin PBXFileReference section */
 		2239B68D2A028E9A00F2E24E /* swift-markdown-ui */ = {isa = PBXFileReference; lastKnownFileType = wrapper; name = "swift-markdown-ui"; path = ../..; sourceTree = "<group>"; };
+		22BC150E2A1670A300C227F6 /* HighlightSwift */ = {isa = PBXFileReference; lastKnownFileType = wrapper; name = HighlightSwift; path = ../../../HighlightSwift; sourceTree = "<group>"; };
 		9902F2B129571D5D003A2DCC /* ImagesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImagesView.swift; sourceTree = "<group>"; };
 		9902F2B629575183003A2DCC /* ImageProvidersView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageProvidersView.swift; sourceTree = "<group>"; };
 		991E39852950A73500A3012A /* QuotesView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = QuotesView.swift; sourceTree = "<group>"; };
@@ -90,6 +91,7 @@
 		99DE2A12294D9A2B0025E332 = {
 			isa = PBXGroup;
 			children = (
+				22BC150E2A1670A300C227F6 /* HighlightSwift */,
 				2239B68C2A028E9A00F2E24E /* Packages */,
 				99DE2A2C294D9A670025E332 /* swift-markdown-ui */,
 				99DE2A1D294D9A2B0025E332 /* Demo */,
