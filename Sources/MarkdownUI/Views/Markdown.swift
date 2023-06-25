@@ -226,6 +226,13 @@ public struct Markdown: View {
 //    }
 }
 
+extension Markdown: Equatable {
+    public static func == (lhs: Markdown, rhs: Markdown) -> Bool {
+        lhs.content.cachedHash == rhs.content.cachedHash
+    }
+}
+
+
 
 extension Markdown {
   /// Creates a Markdown view from a Markdown-formatted string.
