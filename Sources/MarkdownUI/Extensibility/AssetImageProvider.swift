@@ -44,7 +44,7 @@ public struct AssetImageProvider: ImageProvider {
       } else {
         return NSImage(named: self.name(url))
       }
-    #elseif os(iOS) || os(tvOS) || os(watchOS)
+    #elseif canImport(UIKit)
       return UIImage(named: self.name(url), in: self.bundle, with: nil)
     #endif
   }
@@ -56,5 +56,21 @@ extension ImageProvider where Self == AssetImageProvider {
   /// Use the `markdownImageProvider(_:)` modifier to configure this image provider for a view hierarchy.
   public static var asset: Self {
     .init()
+  }
+}
+
+#if canImport(UIKit)
+  private typealias PlatformImage = UIImage
+#elseif os(macOS)
+  private typealias PlatformImage = NSImage
+#endif
+
+extension Image {
+  fileprivate init(platformImage: PlatformImage) {
+    #if canImport(UIKit)
+      self.init(uiImage: platformImage)
+    #elseif os(macOS)
+      self.init(nsImage: platformImage)
+    #endif
   }
 }
