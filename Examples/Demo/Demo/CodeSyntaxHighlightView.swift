@@ -56,6 +56,7 @@ struct CodeSyntaxHighlightView: View {
     DemoView {
       Markdown(self.content)
         .markdownCodeSyntaxHighlighter(.splash(theme: self.theme))
+        
     }
   }
 

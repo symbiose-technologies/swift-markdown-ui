@@ -2,10 +2,15 @@ import SwiftUI
 
 struct InlineText: View {
   @Environment(\.inlineImageProvider) private var inlineImageProvider
+    @Environment(\.linkAttributeAugmenter) private var linkAttributeAugmenter
   @Environment(\.baseURL) private var baseURL
   @Environment(\.imageBaseURL) private var imageBaseURL
   @Environment(\.theme) private var theme
-
+    @Environment(\.attributedTextActionHandler) private var attributedTextActionHandler
+    @Environment(\.substringHighlightRegex) private var substringHighlightRegex: String?
+    
+    @Environment(\.richTextSelectability) private var richTextSelectability: Bool
+    
   @State private var inlineImages: [String: Image] = [:]
 
   private let inlines: [InlineNode]
@@ -13,25 +18,67 @@ struct InlineText: View {
   init(_ inlines: [InlineNode]) {
     self.inlines = inlines
   }
+    
+    var symAugmented: SymAugmentation {
+        return SymAugmentation(highlightedStyle: theme.highlighted,
+                               highlightSubstringRegex: substringHighlightRegex,
+                               linkAttributeAugmenter: linkAttributeAugmenter,
+                               attributedTextActionHandlers: attributedTextActionHandler
+        )
+    }
 
   var body: some View {
     TextStyleAttributesReader { attributes in
-      self.inlines.renderText(
-        baseURL: self.baseURL,
-        textStyles: .init(
-          code: self.theme.code,
-          emphasis: self.theme.emphasis,
-          strong: self.theme.strong,
-          strikethrough: self.theme.strikethrough,
-          link: self.theme.link
-        ),
-        images: self.inlineImages,
-        attributes: attributes
-      )
+        #if os(macOS)
+        TextFieldAppKit(
+            baseURL: baseURL,
+            inlines: self.inlines,
+            images: self.inlineImages,
+            textStyles: .init(
+                code: self.theme.code,
+                emphasis: self.theme.emphasis,
+                strong: self.theme.strong,
+                strikethrough: self.theme.strikethrough,
+                link: self.theme.link
+              ),
+            attributes: attributes,
+            symAugmented: symAugmented
+        )
+        #else
+//        TextLabelUIKit(inlines: self.inlines,
+//                       images: self.inlineImages,
+//                       environment: .init(
+//                         baseURL: self.baseURL,
+//                         code: self.theme.code,
+//                         emphasis: self.theme.emphasis,
+//                         strong: self.theme.strong,
+//                         strikethrough: self.theme.strikethrough,
+//                         link: self.theme.link
+//                       ),
+//                       attributes: attributes,
+//                       linkAugmenter: linkAttributeAugmenter)
+        
+      //TODO: use the SymMemoryCache if performance is challenging
+        self.inlines.renderText(
+          baseURL: self.baseURL,
+          textStyles: .init(
+            code: self.theme.code,
+            emphasis: self.theme.emphasis,
+            strong: self.theme.strong,
+            strikethrough: self.theme.strikethrough,
+            link: self.theme.link
+          ),
+          images: self.inlineImages,
+          attributes: attributes,
+          symAugmented: self.symAugmented
+        )
+        
+        #endif
     }
-    .task(id: self.inlines) {
+    .task(id: self.inlines, priority: .medium) {
       self.inlineImages = (try? await self.loadInlineImages()) ?? [:]
     }
+    .fixedSize(horizontal: false, vertical: true)
   }
 
   private func loadInlineImages() async throws -> [String: Image] {

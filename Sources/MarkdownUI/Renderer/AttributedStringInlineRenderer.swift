@@ -4,30 +4,99 @@ extension InlineNode {
   func renderAttributedString(
     baseURL: URL?,
     textStyles: InlineTextStyles,
-    attributes: AttributeContainer
+    attributes: AttributeContainer,
+    symAugmented: SymAugmentation
   ) -> AttributedString {
     var renderer = AttributedStringInlineRenderer(
       baseURL: baseURL,
       textStyles: textStyles,
-      attributes: attributes
+      attributes: attributes,
+      symAugmented: symAugmented
     )
     renderer.render(self)
-    return renderer.result.resolvingFonts()
+    return renderer.result
+          .resolvingFonts()
+          .highlightMatches(regex: symAugmented.highlightSubstringRegex,
+                            attributes: symAugmented.highlightedStyle.mergingAttributes(renderer.attributes))
   }
 }
+
+//create a version that takes an array of `[InlineNode]` and uses a reduce fn to create a single attributed string
+
+extension Array where Element == InlineNode {
+    func renderCombinedAttributedString(
+        baseURL: URL?,
+        textStyles: InlineTextStyles,
+        attributes: AttributeContainer,
+        symAugmented: SymAugmentation,
+        executeHighlightRegex: Bool = false
+    ) -> AttributedString {
+        
+        if let cached = SymAttributedStringCache.shared.attrStrCache.value(forKey: .init(
+            inlineNodes: self,
+            attributes: attributes)) {
+//            print("[ATTRIBUTED STRING] CACHE HIT!!")
+            if executeHighlightRegex {
+                return cached
+                    .highlightMatches(
+                        regex: symAugmented.highlightSubstringRegex,
+                        attributes: symAugmented.highlightedStyle.mergingAttributes(attributes)
+                    )
+            } else {
+                return cached
+            }
+            
+            
+        } else {
+            let combinedAttributedString = reduce(into: AttributedString()) { result, node in
+                let nodeAttributedString = node.renderAttributedString(
+                    baseURL: baseURL,
+                    textStyles: textStyles,
+                    attributes: attributes,
+                    symAugmented: symAugmented
+                )
+                result.append(nodeAttributedString)
+            }
+            
+            let cacheableStr = combinedAttributedString
+                .resolvingFonts()
+            
+            SymAttributedStringCache.shared.attrStrCache.insert(cacheableStr, forKey: .init(inlineNodes: self, attributes: attributes))
+            
+            if executeHighlightRegex {
+                return cacheableStr
+                    .highlightMatches(
+                        regex: symAugmented.highlightSubstringRegex,
+                        attributes: symAugmented.highlightedStyle.mergingAttributes(attributes)
+                    )
+            } else {
+                return cacheableStr
+            }
+        }
+        
+        
+    }
+}
+
+
 
 private struct AttributedStringInlineRenderer {
   var result = AttributedString()
 
   private let baseURL: URL?
   private let textStyles: InlineTextStyles
-  private var attributes: AttributeContainer
+  private(set) var attributes: AttributeContainer
   private var shouldSkipNextWhitespace = false
 
-  init(baseURL: URL?, textStyles: InlineTextStyles, attributes: AttributeContainer) {
-    self.baseURL = baseURL
-    self.textStyles = textStyles
-    self.attributes = attributes
+    let symAugmentation: SymAugmentation
+    
+  init(baseURL: URL?, textStyles: InlineTextStyles,
+       attributes: AttributeContainer,
+       symAugmented: SymAugmentation) {
+      self.baseURL = baseURL
+      self.textStyles = textStyles
+      self.attributes = attributes
+      self.symAugmentation = symAugmented
   }
 
   mutating func render(_ inline: InlineNode) {
@@ -129,8 +198,17 @@ private struct AttributedStringInlineRenderer {
 
   private mutating func renderLink(destination: String, children: [InlineNode]) {
     let savedAttributes = self.attributes
-    self.attributes = self.textStyles.link.mergingAttributes(self.attributes)
-    self.attributes.link = URL(string: destination, relativeTo: self.baseURL)
+      var newAttributes = self.textStyles.link.mergingAttributes(self.attributes)
+      newAttributes.link  = URL(string: destination, relativeTo: self.baseURL)
+      newAttributes = self.symAugmentation.linkAttributeAugmenter
+          .augmentLinkAttributes(
+            sourceAttributes: newAttributes,
+            url: newAttributes.link,
+            childrenText: children.renderPlainText())
+      self.attributes = newAttributes
+      
+//      self.attributes = self.textStyles.link.mergingAttributes(self.attributes)
+//    self.attributes.link = URL(string: destination, relativeTo: self.baseURL)
 
     for child in children {
       self.render(child)
@@ -145,7 +223,7 @@ private struct AttributedStringInlineRenderer {
 }
 
 extension TextStyle {
-  fileprivate func mergingAttributes(_ attributes: AttributeContainer) -> AttributeContainer {
+  public func mergingAttributes(_ attributes: AttributeContainer) -> AttributeContainer {
     var newAttributes = attributes
     self._collectAttributes(in: &newAttributes)
     return newAttributes
