@@ -17,6 +17,7 @@ let package = Package(
     )
   ],
   dependencies: [
+    .package(url: "https://github.com/gonzalezreal/NetworkImage", from: "6.0.0"),
     .package(url: "https://github.com/pointfreeco/swift-snapshot-testing", from: "1.10.0"),
     .package(url: "https://github.com/symbiose-technologies/AttributedString", branch: "symbiose"),
 //    .package(url: "https://github.com/symbiose-technologies/HighlightSwift.git", branch: "symbiose")
@@ -27,6 +28,7 @@ let package = Package(
       name: "MarkdownUI",
       dependencies: ["cmark-gfm",
                      .product(name: "AttributedString", package: "AttributedString"),
+                             .product(name: "NetworkImage", package: "NetworkImage"),
 //                     .product(name: "HighlightSwift", package: "HighlightSwift")
                     ]
     ),
