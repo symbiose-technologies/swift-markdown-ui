@@ -45,7 +45,11 @@ extension AttributedString {
     return output
   }
     
-    func highlightMatches(regex: String?, attributes: AttributeContainer? = nil) -> AttributedString {
+    func highlightMatches(
+        regex: String?,
+        attributes: AttributeContainer? = nil,
+        fallbackBgColor: Color = Color.yellow
+    ) -> AttributedString {
         guard let regexStr = regex else { return self }
         guard let nRegex = try? NSRegularExpression(pattern: regexStr, options: .caseInsensitive) else {
             return self
@@ -61,7 +65,7 @@ extension AttributedString {
                 if let expAttributes = attributes {
                     copy[range].mergeAttributes(expAttributes, mergePolicy: .keepNew)
                 } else {
-                    copy[range].backgroundColor = .yellow
+                    copy[range].backgroundColor = fallbackBgColor
                 }
             }
             

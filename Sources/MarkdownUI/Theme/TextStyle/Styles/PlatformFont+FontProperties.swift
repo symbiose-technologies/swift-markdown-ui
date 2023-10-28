@@ -28,6 +28,7 @@ extension NSFont {
             case .rounded:
                 font = NSFont.systemFont(ofSize: size, weight: weight)
             case .monospaced:
+                
                 font = NSFont.monospacedSystemFont(ofSize: size, weight: weight)
             @unknown default:
                 font = NSFont.systemFont(ofSize: size, weight: weight)
@@ -112,7 +113,7 @@ extension UIFont {
                 font = UIFont.systemFont(ofSize: size, weight: weight)
             case .rounded:
                 font = UIFont.systemFont(ofSize: size, weight: weight)
-//                font = UIFont.roundedFont(ofSize: size, weight: weight)
+                
             case .monospaced:
                 font = UIFont.monospacedSystemFont(ofSize: size, weight: weight)
             @unknown default:
@@ -128,14 +129,44 @@ extension UIFont {
     }
     
     func applyVariants(properties: FontProperties) -> UIFont {
-        var traits: UIFontDescriptor.SymbolicTraits = []
+        var fd: UIFontDescriptor = self.fontDescriptor
+        
+        switch properties.family {
+        case .system(let design):
+            switch design {
+            case .default:
+                break;
+            case .serif:
+                fd = fd.withDesign(.serif) ?? fd
+            case .rounded:
+                fd = fd.withDesign(.rounded) ?? fd
+            case .monospaced:
+                fd = fd.withDesign(.monospaced) ?? fd
+            @unknown default:
+                break
+            }
+        case .custom(let name):
+            break
+        }
+        
+        var traits: UIFontDescriptor.SymbolicTraits = fd.symbolicTraits
         var fontFeatures: [[UIFontDescriptor.FeatureKey: Int]] = []
+        
+        
         switch properties.familyVariant {
         case .normal:
             break
         case .monospaced:
             traits.insert(.traitMonoSpace)
         }
+        
+        switch properties.style {
+        case .normal:
+            break
+        case .italic:
+            traits.insert(.traitItalic)
+        }
+        
         
         switch properties.capsVariant {
         case .normal:
@@ -163,10 +194,12 @@ extension UIFont {
             traits.insert(.traitMonoSpace)
         }
         
-        let descriptor = self.fontDescriptor.withSymbolicTraits(traits) ?? self.fontDescriptor
+        var descriptor = self.fontDescriptor.withSymbolicTraits(traits)
+        descriptor = (descriptor ?? self.fontDescriptor)
             .addingAttributes([.featureSettings: fontFeatures])
         
-        return UIFont(descriptor: descriptor, size: properties.scaledSize)
+        
+        return UIFont(descriptor: (descriptor ?? self.fontDescriptor), size: properties.scaledSize)
     }
     
 }
@@ -194,6 +227,7 @@ private extension Font.Weight {
         case .black:
             return .black
         default:
+            print("Self Font Weight: \(self)")
             return .regular
         }
     }

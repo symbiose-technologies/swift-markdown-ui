@@ -59,7 +59,9 @@ extension ASAttributedString {
             if let substringHighlightRegex = sym.highlightSubstringRegex {
                 let substringHighlightContainer = sym.highlightedStyle.mergingAttributes(attributes)
                 let substringHighlightDic = substringHighlightContainer.toNSDictionary()
-                attr.add(attributes: [.custom(substringHighlightDic)], checkings: [.regex(substringHighlightRegex)])
+                attr.add(attributes: [.custom(substringHighlightDic)], 
+                         checkings: [.regex(substringHighlightRegex)]
+                )
             }
         }
         for action in sym.attributedTextActionHandlers {
@@ -141,6 +143,7 @@ extension AttributeContainer {
             attributeDict[.cursor] = NSCursor.pointingHand
         }
         
+        
         let paragraphStyle = NSMutableParagraphStyle()
         paragraphStyle.lineHeightMultiple = 1.3
         attributeDict[.paragraphStyle] = paragraphStyle
@@ -151,6 +154,15 @@ extension AttributeContainer {
             paragraphStyle.lineBreakMode = .byWordWrapping
             paragraphStyle.lineBreakStrategy = .standard
             attributeDict[.paragraphStyle] = paragraphStyle
+        }
+        if let foregroundC = self.swiftUI.foregroundColor {
+            attributeDict[.foregroundColor] = UIColor(foregroundC)
+        }
+        if let backgroundC = self.swiftUI.backgroundColor {
+            attributeDict[.backgroundColor] = UIColor(backgroundC)
+        }
+        if let link = attributeDict.removeValue(forKey: .link) as? URL {
+            attributeDict[.macLink] = link
         }
         #endif
         return attributeDict

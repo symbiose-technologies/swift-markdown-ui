@@ -7,7 +7,7 @@
 #if os(macOS)
 import Foundation
 
-import Cocoa
+import AppKit
 
 // You probably want to use one of RSHeightHuggingTextField or RSWidthHuggingTextField, below
 open class RSDimensionHuggingTextField: NSTextField {

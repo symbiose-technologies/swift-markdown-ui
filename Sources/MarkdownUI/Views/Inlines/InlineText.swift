@@ -12,7 +12,9 @@ struct InlineText: View {
     @Environment(\.richTextSelectability) private var richTextSelectability: Bool
     
   @State private var inlineImages: [String: Image] = [:]
-
+    
+    @Environment(\.mdOnTextTapCb_iOS) private var onTextTapCb_iOS
+    
   private let inlines: [InlineNode]
 
   init(_ inlines: [InlineNode]) {
@@ -45,18 +47,19 @@ struct InlineText: View {
             symAugmented: symAugmented
         )
         #else
-//        TextLabelUIKit(inlines: self.inlines,
+//        TextLabelUIKit(baseURL: baseURL,
+//                       inlines: self.inlines,
 //                       images: self.inlineImages,
-//                       environment: .init(
-//                         baseURL: self.baseURL,
-//                         code: self.theme.code,
-//                         emphasis: self.theme.emphasis,
-//                         strong: self.theme.strong,
-//                         strikethrough: self.theme.strikethrough,
-//                         link: self.theme.link
-//                       ),
+//                       textStyles: .init(
+//                           code: self.theme.code,
+//                           emphasis: self.theme.emphasis,
+//                           strong: self.theme.strong,
+//                           strikethrough: self.theme.strikethrough,
+//                           link: self.theme.link
+//                         ),
 //                       attributes: attributes,
-//                       linkAugmenter: linkAttributeAugmenter)
+//                       symAugmented: symAugmented
+//        )
         
       //TODO: use the SymMemoryCache if performance is challenging
         self.inlines.renderText(
@@ -72,10 +75,14 @@ struct InlineText: View {
           attributes: attributes,
           symAugmented: self.symAugmented
         )
+        .onTapGesture {
+            onTextTapCb_iOS?()
+//            print("[InlineText] on tap!")
+        }
         
-        #endif
+#endif
     }
-    .task(id: self.inlines, priority: .medium) {
+    .task(id: self.inlines, priority: .low) {
       self.inlineImages = (try? await self.loadInlineImages()) ?? [:]
     }
     .fixedSize(horizontal: false, vertical: true)
