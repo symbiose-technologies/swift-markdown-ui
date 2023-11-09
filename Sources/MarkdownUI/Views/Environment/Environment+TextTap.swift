@@ -16,16 +16,27 @@ import Foundation
 import SwiftUI
 
 
-public typealias OnTextTapCallback = () -> Void
+public typealias OnTextTapCallback = ([InlineNode]) -> Void
+public struct TextTapCallbacks {
+    let singleTap: OnTextTapCallback?
+    let doubleTap: OnTextTapCallback?
+    public init(singleTap: OnTextTapCallback?, doubleTap: OnTextTapCallback?) {
+        self.singleTap = singleTap
+        self.doubleTap = doubleTap
+    }
+}
+
+
+
 
 
 struct OnTextTapCallbackKey: EnvironmentKey {
-    static let defaultValue: OnTextTapCallback? = nil
+    static let defaultValue: TextTapCallbacks? = nil
 }
 
 
 public extension EnvironmentValues {
-    var mdOnTextTapCb_iOS: OnTextTapCallback? {
+    var mdOnTextTapCb_iOS: TextTapCallbacks? {
         get { self[OnTextTapCallbackKey.self] }
         set { self[OnTextTapCallbackKey.self] = newValue }
     }
@@ -33,7 +44,7 @@ public extension EnvironmentValues {
 
 public extension View {
     
-    func setMdOnTextTapCb_iOS(_ cb: OnTextTapCallback?) -> some View {
+    func setMdOnTextTapCb_iOS(_ cb: TextTapCallbacks?) -> some View {
         self
             .environment(\.mdOnTextTapCb_iOS, cb)
     }

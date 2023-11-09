@@ -17,6 +17,9 @@ struct InlineText: View {
     
   private let inlines: [InlineNode]
 
+    var hasOnTapCb: Bool { onTextTapCb_iOS?.singleTap != nil }
+    
+    
   init(_ inlines: [InlineNode]) {
     self.inlines = inlines
   }
@@ -75,10 +78,10 @@ struct InlineText: View {
           attributes: attributes,
           symAugmented: self.symAugmented
         )
-        .onTapGesture {
-            onTextTapCb_iOS?()
-//            print("[InlineText] on tap!")
-        }
+        .gesture(
+            combinedGesture,
+            including: hasOnTapCb ? .all : .subviews
+        )
         
 #endif
     }
@@ -87,6 +90,22 @@ struct InlineText: View {
     }
     .fixedSize(horizontal: false, vertical: true)
   }
+    
+    
+    var combinedGesture: some Gesture {
+        TapGesture(count: 2)
+            .onEnded({ _ in
+                onTextTapCb_iOS?.doubleTap?(self.inlines)
+            })
+            .exclusively(
+                before:
+                    TapGesture(count: 1)
+                    .onEnded({ _ in
+                        onTextTapCb_iOS?.singleTap?(self.inlines)
+                    })
+            )
+        
+    }
 
   private func loadInlineImages() async throws -> [String: Image] {
     let images = Set(self.inlines.compactMap(\.imageData))
