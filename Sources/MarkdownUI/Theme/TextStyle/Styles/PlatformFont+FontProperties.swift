@@ -17,6 +17,12 @@ extension NSFont {
         let size = properties.scaledSize
         let weight = properties.weight.appKitWeight
         
+        let isMonospace = properties.familyVariant == .monospaced
+        if isMonospace {
+            let monoFont = NSFont.monospacedSystemFont(ofSize: size, weight: weight)
+            return  monoFont.applyVariants(properties: properties)
+        }
+        
         switch properties.family {
         case .system(let design):
             let font: NSFont
@@ -33,6 +39,7 @@ extension NSFont {
             @unknown default:
                 font = NSFont.systemFont(ofSize: size, weight: weight)
             }
+            
             return  font.applyVariants(properties: properties)
         case .custom(let name):
             guard let font = NSFont(name: name, size: size) else {
@@ -103,6 +110,8 @@ extension UIFont {
         let size = properties.scaledSize
         let weight = properties.weight.uiKitWeight
         
+        
+        
         switch properties.family {
         case .system(let design):
             let font: UIFont
@@ -148,6 +157,9 @@ extension UIFont {
         case .custom(let name):
             break
         }
+        
+        
+        
         
         var traits: UIFontDescriptor.SymbolicTraits = fd.symbolicTraits
         var fontFeatures: [[UIFontDescriptor.FeatureKey: Int]] = []
