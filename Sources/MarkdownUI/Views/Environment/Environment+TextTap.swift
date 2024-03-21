@@ -30,12 +30,21 @@ public struct TextTapCallbacks {
 
 
 
+struct OnTextTapCallbackEnabledKey: EnvironmentKey {
+    static let defaultValue: Bool = true
+}
+
 struct OnTextTapCallbackKey: EnvironmentKey {
     static let defaultValue: TextTapCallbacks? = nil
 }
 
 
 public extension EnvironmentValues {
+    var mdOnTextTapEnabled_iOS: Bool {
+        get { self[OnTextTapCallbackEnabledKey.self] }
+        set { self[OnTextTapCallbackEnabledKey.self] = newValue }
+    }
+    
     var mdOnTextTapCb_iOS: TextTapCallbacks? {
         get { self[OnTextTapCallbackKey.self] }
         set { self[OnTextTapCallbackKey.self] = newValue }
@@ -43,6 +52,10 @@ public extension EnvironmentValues {
 }
 
 public extension View {
+    func setMdOnTextTapEnabled_iOS(_ enabled: Bool) -> some View {
+        self
+            .environment(\.mdOnTextTapEnabled_iOS, enabled)
+    }
     
     func setMdOnTextTapCb_iOS(_ cb: TextTapCallbacks?) -> some View {
         self

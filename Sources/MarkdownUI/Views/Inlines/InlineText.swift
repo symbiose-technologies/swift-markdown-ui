@@ -1,5 +1,27 @@
 import SwiftUI
 
+public enum MacOSInlineTextRenderingType: Equatable, Hashable {
+    case nativeSwiftUI //standard swiftui text rendering, native for the lib
+    case appKit //huggingtextfield for inlines
+}
+
+private struct MacOSInlineTextRenderingType_EnvKey: EnvironmentKey {
+    static let defaultValue: MacOSInlineTextRenderingType = .appKit
+}
+
+extension EnvironmentValues {
+    var macOSInlineTextRenderingType: MacOSInlineTextRenderingType {
+        get { self[MacOSInlineTextRenderingType_EnvKey.self] }
+        set { self[MacOSInlineTextRenderingType_EnvKey.self] = newValue }
+    }
+}
+public extension View {
+    func setMacOSInlineTextRenderingType(_ type: MacOSInlineTextRenderingType) -> some View {
+        self.environment(\.macOSInlineTextRenderingType, type)
+    }
+}
+
+
 struct InlineText: View {
   @Environment(\.inlineImageProvider) private var inlineImageProvider
     @Environment(\.linkAttributeAugmenter) private var linkAttributeAugmenter
@@ -14,6 +36,10 @@ struct InlineText: View {
   @State private var inlineImages: [String: Image] = [:]
     
     @Environment(\.mdOnTextTapCb_iOS) private var onTextTapCb_iOS
+    @Environment(\.mdOnTextTapEnabled_iOS) private var mdOnTextTapEnabled_iOS
+
+    @Environment(\.macOSInlineTextRenderingType) private var macOSInlineTextRenderingType
+    
     
   private let inlines: [InlineNode]
 
@@ -35,20 +61,44 @@ struct InlineText: View {
   var body: some View {
     TextStyleAttributesReader { attributes in
         #if os(macOS)
-        TextFieldAppKit(
-            baseURL: baseURL,
-            inlines: self.inlines,
-            images: self.inlineImages,
-            textStyles: .init(
+        switch macOSInlineTextRenderingType {
+        case .appKit:
+            TextFieldAppKit(
+                baseURL: baseURL,
+                inlines: self.inlines,
+                images: self.inlineImages,
+                textStyles: .init(
+                    code: self.theme.code,
+                    emphasis: self.theme.emphasis,
+                    strong: self.theme.strong,
+                    strikethrough: self.theme.strikethrough,
+                    link: self.theme.link
+                ),
+                attributes: attributes,
+                symAugmented: symAugmented
+            )
+            
+        case .nativeSwiftUI:
+            self.inlines.renderText(
+              baseURL: self.baseURL,
+              textStyles: .init(
                 code: self.theme.code,
                 emphasis: self.theme.emphasis,
                 strong: self.theme.strong,
                 strikethrough: self.theme.strikethrough,
                 link: self.theme.link
               ),
-            attributes: attributes,
-            symAugmented: symAugmented
-        )
+              images: self.inlineImages,
+              attributes: attributes,
+              symAugmented: self.symAugmented
+            )
+            .gesture(
+                combinedGesture,
+                including: hasOnTapCb ? .all : .subviews
+            )
+            
+        }
+        
         #else
 //        TextLabelUIKit(baseURL: baseURL,
 //                       inlines: self.inlines,
@@ -80,7 +130,7 @@ struct InlineText: View {
         )
         .gesture(
             combinedGesture,
-            including: hasOnTapCb ? .all : .subviews
+            including: (hasOnTapCb && mdOnTextTapEnabled_iOS) ? .all : .subviews
         )
         
 #endif
