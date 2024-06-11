@@ -27,6 +27,7 @@ where
       ForEach(self.data, id: \.self) { element in
         self.content(element.index, element.value)
           .onPreferenceChange(BlockMarginsPreference.self) { value in
+//              print("[BlockSequence] onPreferenceChange: BlockMarginsPreference: \(value)")
             self.blockMargins[element.hashValue] = value
           }
           .padding(.top, self.topPaddingLength(for: element))

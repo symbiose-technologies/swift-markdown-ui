@@ -1,6 +1,6 @@
 import Foundation
 
-extension Sequence where Element == BlockNode {
+public extension Sequence where Element == BlockNode {
   func rewrite(_ r: (BlockNode) throws -> [BlockNode]) rethrows -> [BlockNode] {
     try self.flatMap { try $0.rewrite(r) }
   }
@@ -10,7 +10,7 @@ extension Sequence where Element == BlockNode {
   }
 }
 
-extension BlockNode {
+public extension BlockNode {
   func rewrite(_ r: (BlockNode) throws -> [BlockNode]) rethrows -> [BlockNode] {
     switch self {
     case .blockquote(let children):
