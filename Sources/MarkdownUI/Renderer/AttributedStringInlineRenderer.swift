@@ -4,12 +4,14 @@ extension InlineNode {
   func renderAttributedString(
     baseURL: URL?,
     textStyles: InlineTextStyles,
+    softBreakMode: SoftBreak.Mode,
     attributes: AttributeContainer,
     symAugmented: SymAugmentation
   ) -> AttributedString {
     var renderer = AttributedStringInlineRenderer(
       baseURL: baseURL,
       textStyles: textStyles,
+      softBreakMode: softBreakMode,
       attributes: attributes,
       symAugmented: symAugmented
     )
@@ -85,18 +87,25 @@ private struct AttributedStringInlineRenderer {
 
   private let baseURL: URL?
   private let textStyles: InlineTextStyles
-  private(set) var attributes: AttributeContainer
+  
+  private let softBreakMode: SoftBreak.Mode
+  private var attributes: AttributeContainer
   private var shouldSkipNextWhitespace = false
 
-    let symAugmentation: SymAugmentation
+  let symAugmentation: SymAugmentation
     
-  init(baseURL: URL?, textStyles: InlineTextStyles,
-       attributes: AttributeContainer,
-       symAugmented: SymAugmentation) {
-      self.baseURL = baseURL
-      self.textStyles = textStyles
-      self.attributes = attributes
-      self.symAugmentation = symAugmented
+  init(
+    baseURL: URL?,
+    textStyles: InlineTextStyles,
+    softBreakMode: SoftBreak.Mode,
+    attributes: AttributeContainer,
+       symAugmented: SymAugmentation
+  ) {
+    self.baseURL = baseURL
+    self.textStyles = textStyles
+    self.softBreakMode = softBreakMode
+    self.attributes = attributes
+    self.symAugmentation = symAugmented
   }
 
   mutating func render(_ inline: InlineNode) {
@@ -136,10 +145,13 @@ private struct AttributedStringInlineRenderer {
   }
 
   private mutating func renderSoftBreak() {
-    if self.shouldSkipNextWhitespace {
+    switch softBreakMode {
+    case .space where self.shouldSkipNextWhitespace:
       self.shouldSkipNextWhitespace = false
-    } else {
+    case .space:
       self.result += .init(" ", attributes: self.attributes)
+    case .lineBreak:
+      self.renderLineBreak()
     }
   }
 

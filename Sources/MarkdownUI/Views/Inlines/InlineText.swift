@@ -27,6 +27,7 @@ struct InlineText: View {
     @Environment(\.linkAttributeAugmenter) private var linkAttributeAugmenter
   @Environment(\.baseURL) private var baseURL
   @Environment(\.imageBaseURL) private var imageBaseURL
+  @Environment(\.softBreakMode) private var softBreakMode
   @Environment(\.theme) private var theme
     @Environment(\.attributedTextActionHandler) private var attributedTextActionHandler
     @Environment(\.substringHighlightRegex) private var substringHighlightRegex: String?
@@ -89,6 +90,7 @@ struct InlineText: View {
                 link: self.theme.link
               ),
               images: self.inlineImages,
+              softBreakMode: self.softBreakMode,
               attributes: attributes,
               symAugmented: self.symAugmented
             )
@@ -125,6 +127,7 @@ struct InlineText: View {
             link: self.theme.link
           ),
           images: self.inlineImages,
+          softBreakMode: self.softBreakMode,
           attributes: attributes,
           symAugmented: self.symAugmented
         )
@@ -134,6 +137,7 @@ struct InlineText: View {
         )
         
 #endif
+                               
     }
     .task(id: self.inlines, priority: .low) {
       self.inlineImages = (try? await self.loadInlineImages()) ?? [:]

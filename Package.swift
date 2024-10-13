@@ -8,6 +8,7 @@ let package = Package(
     .macOS(.v13),
     .iOS(.v15),
     .tvOS(.v15),
+    .macCatalyst(.v15),
     .watchOS(.v8),
   ],
   products: [
@@ -20,17 +21,16 @@ let package = Package(
     .package(url: "https://github.com/gonzalezreal/NetworkImage", from: "6.0.0"),
     .package(url: "https://github.com/pointfreeco/swift-snapshot-testing", from: "1.10.0"),
     .package(url: "https://github.com/symbiose-technologies/AttributedString", branch: "symbiose"),
-//    .package(url: "https://github.com/symbiose-technologies/HighlightSwift.git", branch: "symbiose")
+    .package(url: "https://github.com/swiftlang/swift-cmark", from: "0.4.0"),
   ],
   targets: [
-    .target(name: "cmark-gfm"),
     .target(
       name: "MarkdownUI",
-      dependencies: ["cmark-gfm",
-                     .product(name: "AttributedString", package: "AttributedString"),
-                             .product(name: "NetworkImage", package: "NetworkImage"),
-//                     .product(name: "HighlightSwift", package: "HighlightSwift")
-                    ]
+      dependencies: [
+        .product(name: "cmark-gfm", package: "swift-cmark"),
+        .product(name: "cmark-gfm-extensions", package: "swift-cmark"),
+        .product(name: "NetworkImage", package: "NetworkImage"),
+      ]
     ),
     .testTarget(
       name: "MarkdownUITests",

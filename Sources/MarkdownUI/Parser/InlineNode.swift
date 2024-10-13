@@ -1,6 +1,6 @@
 import Foundation
 
-public enum InlineNode: Hashable {
+public enum InlineNode: Hashable, Sendable {
   case text(String)
   case softBreak
   case lineBreak

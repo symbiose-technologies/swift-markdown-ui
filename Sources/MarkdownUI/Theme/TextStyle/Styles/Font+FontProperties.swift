@@ -9,7 +9,7 @@ extension Font {
     case .system(let design):
       font = .system(size: size, design: design)
     case .custom(let name):
-      font = .custom(name, size: size)
+      font = .custom(name, fixedSize: size)
     }
 
     switch fontProperties.familyVariant {
@@ -39,6 +39,12 @@ extension Font {
 
     if fontProperties.weight != .regular {
       font = font.weight(fontProperties.weight)
+    }
+
+    if #available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *) {
+      if fontProperties.width != .standard {
+        font = font.width(fontProperties.width)
+      }
     }
 
     switch fontProperties.style {
