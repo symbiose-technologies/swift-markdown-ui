@@ -95,6 +95,7 @@ struct CodeSyntaxHighlightView: View {
           codeBlock($0)
         }
         .markdownCodeSyntaxHighlighter(.splash(theme: self.theme))
+        
     }
   }
 
@@ -147,14 +148,14 @@ struct CodeSyntaxHighlightView: View {
   }
 
   private func copyToClipboard(_ string: String) {
-#if os(macOS)
-    if let pasteboard = NSPasteboard.general {
-      pasteboard.clearContents()
-      pasteboard.setString(string, forType: .string)
-    }
-#elseif os(iOS)
-    UIPasteboard.general.string = string
-#endif
+    #if os(macOS)
+      if let pasteboard = NSPasteboard.general {
+        pasteboard.clearContents()
+        pasteboard.setString(string, forType: .string)
+      }
+    #elseif os(iOS)
+      UIPasteboard.general.string = string
+    #endif
   }
 }
 

@@ -6,6 +6,7 @@ struct FlowLayout: Layout {
   let verticalSpacing: CGFloat
 
   func sizeThatFits(proposal: ProposedViewSize, subviews: Subviews, cache: inout Void) -> CGSize {
+      print("[MarkdownUI] FlowLayout sizeThatFits")
     let rows = self.computeLayout(for: proposal, subviews: subviews)
     return self.sizeThatFits(rows: rows)
   }

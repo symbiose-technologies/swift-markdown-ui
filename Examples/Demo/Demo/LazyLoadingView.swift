@@ -45,10 +45,10 @@ struct LazyLoadingView: View {
           }
           .frame(maxWidth: .infinity, alignment: .leading)
         }
-        ForEach(self.items) { item in
-          Markdown(item.content)
-            .padding()
-        }
+//        ForEach(self.items) { item in
+//          Markdown(item.content)
+//            .padding()
+//        }
       }
       .padding()
     }

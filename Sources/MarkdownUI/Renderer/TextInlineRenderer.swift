@@ -5,13 +5,17 @@ extension Sequence where Element == InlineNode {
     baseURL: URL?,
     textStyles: InlineTextStyles,
     images: [String: Image],
-    attributes: AttributeContainer
+    softBreakMode: SoftBreak.Mode,
+    attributes: AttributeContainer,
+    symAugmented: SymAugmentation
   ) -> Text {
     var renderer = TextInlineRenderer(
       baseURL: baseURL,
       textStyles: textStyles,
       images: images,
-      attributes: attributes
+      softBreakMode: softBreakMode,
+      attributes: attributes,
+      symAugmented: symAugmented
     )
     renderer.render(self)
     return renderer.result
@@ -24,19 +28,25 @@ private struct TextInlineRenderer {
   private let baseURL: URL?
   private let textStyles: InlineTextStyles
   private let images: [String: Image]
+  private let softBreakMode: SoftBreak.Mode
   private let attributes: AttributeContainer
   private var shouldSkipNextWhitespace = false
 
+    private let symAugmented: SymAugmentation
   init(
     baseURL: URL?,
     textStyles: InlineTextStyles,
     images: [String: Image],
-    attributes: AttributeContainer
+    softBreakMode: SoftBreak.Mode,
+    attributes: AttributeContainer,
+    symAugmented: SymAugmentation
   ) {
     self.baseURL = baseURL
     self.textStyles = textStyles
     self.images = images
+    self.softBreakMode = softBreakMode
     self.attributes = attributes
+      self.symAugmented = symAugmented
   }
 
   mutating func render<S: Sequence>(_ inlines: S) where S.Element == InlineNode {
@@ -72,10 +82,14 @@ private struct TextInlineRenderer {
   }
 
   private mutating func renderSoftBreak() {
-    if self.shouldSkipNextWhitespace {
+    switch self.softBreakMode {
+    case .space where self.shouldSkipNextWhitespace:
       self.shouldSkipNextWhitespace = false
-    } else {
+    case .space:
       self.defaultRender(.softBreak)
+    case .lineBreak:
+      self.shouldSkipNextWhitespace = true
+      self.defaultRender(.lineBreak)
     }
   }
 
@@ -104,7 +118,9 @@ private struct TextInlineRenderer {
         inline.renderAttributedString(
           baseURL: self.baseURL,
           textStyles: self.textStyles,
-          attributes: self.attributes
+          softBreakMode: self.softBreakMode,
+          attributes: self.attributes,
+          symAugmented: self.symAugmented
         )
       )
   }
