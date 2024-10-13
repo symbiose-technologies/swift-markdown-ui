@@ -95,6 +95,7 @@ struct CodeSyntaxHighlightView: View {
           codeBlock($0)
         }
         .markdownCodeSyntaxHighlighter(.splash(theme: self.theme))
+        
     }
   }
 

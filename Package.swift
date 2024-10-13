@@ -1,11 +1,11 @@
-// swift-tools-version:5.6
+// swift-tools-version:5.7
 
 import PackageDescription
 
 let package = Package(
   name: "swift-markdown-ui",
   platforms: [
-    .macOS(.v12),
+    .macOS(.v13),
     .iOS(.v15),
     .tvOS(.v15),
     .macCatalyst(.v15),
@@ -20,6 +20,7 @@ let package = Package(
   dependencies: [
     .package(url: "https://github.com/gonzalezreal/NetworkImage", from: "6.0.0"),
     .package(url: "https://github.com/pointfreeco/swift-snapshot-testing", from: "1.10.0"),
+    .package(url: "https://github.com/symbiose-technologies/AttributedString", branch: "symbiose"),
     .package(url: "https://github.com/swiftlang/swift-cmark", from: "0.4.0"),
   ],
   targets: [

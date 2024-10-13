@@ -59,7 +59,7 @@ public protocol MarkdownContentProtocol {
 ///   }
 /// }
 /// ```
-public struct MarkdownContent: Equatable, MarkdownContentProtocol {
+public struct MarkdownContent: MarkdownContentProtocol {
   /// Returns a Markdown content value with the sum of the contents of all the container blocks
   /// present in this content.
   ///
@@ -73,8 +73,11 @@ public struct MarkdownContent: Equatable, MarkdownContentProtocol {
   public var _markdownContent: MarkdownContent { self }
   let blocks: [BlockNode]
 
+    public let cachedHash: Int
+    
   init(blocks: [BlockNode] = []) {
     self.blocks = blocks
+      self.cachedHash = blocks.hashValue
   }
 
   init(block: BlockNode) {
@@ -114,3 +117,18 @@ public struct MarkdownContent: Equatable, MarkdownContentProtocol {
     self.blocks.renderHTML()
   }
 }
+
+extension MarkdownContent: Equatable {
+    public static func == (lhs: MarkdownContent, rhs: MarkdownContent) -> Bool {
+        return lhs.cachedHash == rhs.cachedHash
+    }
+}
+
+extension MarkdownContent: Hashable {
+    public func hash(into hasher: inout Hasher) {
+        hasher.combine(self.cachedHash)
+    }
+}
+
+
+

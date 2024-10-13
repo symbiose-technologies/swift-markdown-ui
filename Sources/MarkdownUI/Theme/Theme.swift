@@ -117,6 +117,8 @@ public struct Theme {
 
   /// The link style.
   public var link: TextStyle = EmptyTextStyle()
+    
+  public var highlighted: TextStyle = EmptyTextStyle()
 
   var headings = Array(
     repeating: BlockStyle<BlockConfiguration> { $0.label },
@@ -247,6 +249,14 @@ extension Theme {
     theme.link = link()
     return theme
   }
+    
+    /// Adds a highlighted style to the theme.
+    /// - Parameter link: A text style builder that returns the link style.
+    public func highlighted<S: TextStyle>(@TextStyleBuilder highlighted: () -> S) -> Theme {
+      var theme = self
+      theme.highlighted = highlighted()
+      return theme
+    }
 }
 
 extension Theme {
