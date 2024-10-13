@@ -75,6 +75,7 @@ struct InlineText: View {
                     strikethrough: self.theme.strikethrough,
                     link: self.theme.link
                 ),
+                softBreakMode: self.softBreakMode,
                 attributes: attributes,
                 symAugmented: symAugmented
             )

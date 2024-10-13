@@ -29,6 +29,7 @@ extension Array where Element == InlineNode {
     func renderCombinedAttributedString(
         baseURL: URL?,
         textStyles: InlineTextStyles,
+        softBreakMode: SoftBreak.Mode,
         attributes: AttributeContainer,
         symAugmented: SymAugmentation,
         executeHighlightRegex: Bool = false
@@ -54,6 +55,7 @@ extension Array where Element == InlineNode {
                 let nodeAttributedString = node.renderAttributedString(
                     baseURL: baseURL,
                     textStyles: textStyles,
+                    softBreakMode: softBreakMode,
                     attributes: attributes,
                     symAugmented: symAugmented
                 )
@@ -89,7 +91,7 @@ private struct AttributedStringInlineRenderer {
   private let textStyles: InlineTextStyles
   
   private let softBreakMode: SoftBreak.Mode
-  private var attributes: AttributeContainer
+  var attributes: AttributeContainer
   private var shouldSkipNextWhitespace = false
 
   let symAugmentation: SymAugmentation

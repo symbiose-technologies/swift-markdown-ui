@@ -22,6 +22,7 @@ struct TextFieldAppKit: View {
          inlines: [InlineNode],
          images: [String: Image],
          textStyles: InlineTextStyles,
+         softBreakMode: SoftBreak.Mode,
          attributes: AttributeContainer,
          symAugmented: SymAugmentation
     ) {
@@ -35,6 +36,7 @@ struct TextFieldAppKit: View {
         attributed = .createFromArray(baseURL: baseURL,
                                  inlines: inlines,
                                  textStyles: textStyles,
+                                      softBreakMode: softBreakMode,
                                  attributes: attributes,
                                       sym: symAugmented
         )

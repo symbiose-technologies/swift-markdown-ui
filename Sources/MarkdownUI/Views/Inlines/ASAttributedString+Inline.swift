@@ -19,6 +19,7 @@ extension ASAttributedString {
                            inlines: [InlineNode],
          images: [String: Image],
          textStyles: InlineTextStyles,
+           softBreakMode: SoftBreak.Mode,
          attributes: AttributeContainer,
                            symAugmented: SymAugmentation
     ) -> ASAttributedString {
@@ -26,6 +27,7 @@ extension ASAttributedString {
             $0 += createFor(baseURL: baseURL,
                             inline: $1,
                             textStyles: textStyles,
+                            softBreakMode: softBreakMode,
                             attributes: attributes,
                             sym: symAugmented)
         }
@@ -37,12 +39,14 @@ extension ASAttributedString {
     static func createFromArray(baseURL: URL?,
                           inlines: [InlineNode],
                           textStyles: InlineTextStyles,
+                                softBreakMode: SoftBreak.Mode,
                           attributes: AttributeContainer,
                           sym: SymAugmentation) -> ASAttributedString {
         
         let native = inlines.renderCombinedAttributedString(
             baseURL: baseURL,
             textStyles: textStyles,
+            softBreakMode: softBreakMode,
             attributes: attributes,
             symAugmented: sym,
             executeHighlightRegex: false
@@ -75,18 +79,18 @@ extension ASAttributedString {
     static func createFor(baseURL: URL?,
                           inline: InlineNode,
                           textStyles: InlineTextStyles,
+                          softBreakMode: SoftBreak.Mode,
                           attributes: AttributeContainer,
                           sym: SymAugmentation) -> ASAttributedString {
         
         let native = inline.renderAttributedString(
             baseURL: baseURL,
             textStyles: textStyles,
+            softBreakMode: softBreakMode,
             attributes: attributes,
             symAugmented: sym
           )
         
-//        let native = AttributedString(inline: inline, environment: environment, attributes: attributes, linkAugmenter: linkAugmenter)
-//            .resolvingFonts()
         let textStr = String(native.characters[...])
         
         var attr = ASAttributedString(NSAttributedString(string: textStr))
